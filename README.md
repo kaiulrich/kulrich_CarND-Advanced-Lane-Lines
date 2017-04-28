@@ -12,8 +12,8 @@ The goals / steps of this project are the following:
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 [//]: # (Image References)
-
-[image1]: ./examples/undistort_output.png "Undistorted"
+[chessboard_marked]: ./output_images/chessboard_marked.png "chessboard marked"
+[undistorted]: ./output_images/undistort_calibration.png "Undistorted"
 [image2]: ./test_images/test1.jpg "Road Transformed"
 [image3]: ./examples/binary_combo_example.jpg "Binary Example"
 [image4]: ./examples/warped_straight_lines.jpg "Warp Example"
@@ -26,7 +26,7 @@ The goals / steps of this project are the following:
 Following files and folders are included:
 
 * **README.md:** This README
-* **Advanced Lane Finding.ipynb:**  Contains all code to produce the result video and the pictures of this README
+* **Advanced Lane Finding.ipynb:**  Notebook contains all code to produce the result video and the pictures of this README
 * **camera_cal:** This folder contains the pictures of the camera calibration
 * **output_images:** This folder contains all pictures used in this README
 * **test_images:** This folder contains all pictures to test image preprozessing and calculations.
@@ -38,16 +38,20 @@ Following files and folders are included:
 
 Every camera produces pictures with its individual [distortion](https://en.wikipedia.org/wiki/Distortion_(optics)). So it is necessary to calibrate the "camara" with chaessboard images. 
 
-The code for this step is contained in the first code cell of the IPython notebook located in ".Advanced Lane Finding.ipynb" see
+The code for this step is contained in the first code cell of the IPython notebook located in the notbook in the Chapter "1. Camera Calibration"
 
-I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `objp` is just a replicated array of coordinates, and `objpoints` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `imgpoints` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
+I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `corners` is just a replicated array of coordinates, and `obj_points` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `img_points` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
-I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: Advanced Lane Finding.ipynb
+Not on all images the chessboard corners were detected. Some images need smaller patterns to be detected.  So first I tried to detect the corners with a (9, 6) pattern. If the pattern not has been found I tryed a (9, 5) pattern. 
 
+![alt text][chessboard_marked]
 
-I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
+---
+### 2. Undistorting
 
-![alt text][image1]
+I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result. See notbook in the Chapter "2. Camera Calibration"
+
+![alt text][undistorted]
 
 ###Pipeline (single images)
 
