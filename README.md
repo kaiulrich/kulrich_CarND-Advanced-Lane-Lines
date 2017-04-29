@@ -14,11 +14,15 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 [chessboard_marked]: ./output_images/chessboard_marked.png "chessboard marked"
 [undistorted]: ./output_images/undistort_calibration.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
+[org_undistorted]: ./output_images/undistort_straight_lines1.png "Undistorted Test Image"
+[preprozessings]: ./output_images//pre_processings.png "Show preprozessings"
+[wraped]: ./output_images/warped.png "Wraped image"
+[processings]: ./output_images/processings.png "Processings"
+[slidewindow]: ./output_images/slidewindow.png "Fit Visual"
+[draw_lines]: ./output_images/draw_lines.png "Lines drawn"
+[display_curve_values]: ./output_images/display_curve_values.png "display_curve_values"
+[processed_img]: ./output_images/processed_img.png "processed"
+
 [video1]: ./project_video.mp4 "Video"
 
 ---
@@ -53,69 +57,123 @@ I then used the output `obj_points` and `img_points` to compute the camera calib
 
 ![alt text][undistorted]
 
-###Pipeline (single images)
-
-####1. Provide an example of a distortion-corrected image.
 To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
-####2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
 
-![alt text][image3]
+![alt text][org_undistorted]
 
-####3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
+### 3. Preprozessing pipeline
+I used a combination of color and gradient thresholds to generate a binary image. You find the code located in the notbook in the Chapter "3. Create a thresholded binary image"
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The two in first line show the
+* original image (Original)
+* the final binary image (Result)
+
+The three pictures in the bottem line are the result of the of the three thresholds combined to the result
+
+* First picture:  Absolut sobel thresholding in x orientation on the L - Layer of an HLS encoded picture. (ksize = 3, hresh=(25, 100)) **ABS_SOBEL(L, x)**
+
+* Second picture: Absolut sobel thresholding in x orientation on the S - Layer of an HLS encoded picture. (ksize = 3, hresh=(10, 100)) **ABS_SOBEL(S, x)**
+
+* Mask to find the the light spots on the picture **LIGHT_MASK()**
+
+The Pipeline is defined as  
+
+**(ABS_SOBEL(L, x) OR ABS_SOBEL(S, x)) AND LIGHT_MASK()**
+
+The result is the second Image in the first line (Result)
+
+![alt text][preprozessings]
+
+
+### 4. Perspective transform
+
+The code for my perspective transform includes a function called `warp()`, which appears in the notbook in the Chapter "4. Perspective transform". I chose these hardcode the source and destination points in the following manner:
 
 ```
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+src = np.float32 ([
+        [285, 671],
+        [418, 577],
+        [885, 577],
+        [1000, 651]
+    ])
 
+dst = np.float32 ([
+        [220, 651],
+        [220, 550],
+        [921, 550],
+        [921, 651]
+    ])
 ```
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 285, 671      | 220, 651        | 
+| 418, 577      | 220, 550      |
+| 885, 577     | 921, 550      |
+| 1000, 651      | 921, 651        |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
-![alt text][image4]
+![alt text][wraped]
 
-####4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+### 5.  Image pipline 
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+Ihe final Image prozessing pipline is like following:
 
-![alt text][image5]
+* undisorting the image 
+* wrap image
+* preprozess image
 
-####5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+This is the result on all testimages. The last picture shows the histogramm of the final result . 
+You can find the code in the notebook Chapter "5. Image Pipeline"
 
-I did this in lines # through # in my code in `my_other_file.py`
+![alt text][processings]
+ 
 
-####6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+### 6. Identifying lane-line pixels and positions fiting with a polynomial.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+In `slidewindow` (notebook Chapter 6 "Sliding Window Polyfit"), I extract lines and fit polynomials to binary image. In order to do that, I find the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines image and use 17 sliding windows to detect the line position. The addition of sliding window speeds up the search for lane and focuses on only the parts of the image that lane pixels are detected. Numpy method `polyfit()` applies a second-order polynomial to the lane pxiels.
 
-![alt text][image6]
+
+The output from `slidewindow` is used as an input for `drawLines` to show the lane polynomial as a red and blue line.
+It is also used as an input for `polyfit_on_fit` to narrow down the location of lane further.
+
+![alt text][slidewindow] ![alt text][draw_lines] 
+
+
+### 5.  Calculation of the radius of the curvature of the lane and the position of the vehicle with respect to center.
+
+The code for my radius of curvature and vehicle position is done in a function called `calculate_curvature_distance()`, which appears in the notebook Chapter "8. Radius of Curvature and Distance from Lane Center Calculation"
+
+#### a. radius of the curvature
+
+I referred to [this](http://en.wikipedia.org/wiki/Curve_fitting) and [this](http://en.wikipedia.org/wiki/Polynomial_interpolation) to come up with the formula for curvature compution and I use the folowing code to perform the radius calculation: 
+```
+left_fit_cr = np.polyfit(left_y*y_meters_per_pixel, left_x*x_meters_per_pixel, 2)
+
+left_curve_radius = ((1 + (2*left_fit_cr[0]*y_bottom*y_meters_per_pixel + left_fit_cr[1])**2)**1.5) / np.absolute(2*left_fit_cr[0])
+```
+#### b. position of the vehicle with respect to center.
+
+I used the midpoint of dashcam image width as the vehicle position and then used the x position of the lane curves to get the midpoint between the two to find the center of the lane. In the end I subtracted center of the lane from vehicle position and multiplied it by meters per pixel to get an estimate how far off the vehicle is from the center of the lane. I estimated 10 ft was roughly equal to 3.05 meters and 12 ft qual to 3.8 meters. The code for this step can be inspeted in the 28th code cell of the IPython notebook.
+
+### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
+
+I implemented this step in lines in my code in the notebook Capter "9. Prozess whole pipline" in the function `process()`.  Here is an example of my result on a test image:
+
+![alt text][display_curve_values]
+
+### 7. Pipeline (testimages)
+Running the pipline on all testimages it shows following result.
+
+![alt text][processed_img]
 
 ---
 
-###Pipeline (video)
+### 8. Pipeline (video)
+Here's a [link to my video result](./project_video_output.mp4)
 
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
-
-Here's a [link to my video result](./project_video.mp4)
 
 ---
 
