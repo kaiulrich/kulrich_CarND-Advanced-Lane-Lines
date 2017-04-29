@@ -15,9 +15,10 @@ The goals / steps of this project are the following:
 [chessboard_marked]: ./output_images/chessboard_marked.png "chessboard marked"
 [undistorted]: ./output_images/undistort_calibration.png "Undistorted"
 [org_undistorted]: ./output_images/undistort_straight_lines1.png "Undistorted Test Image"
-[preprozessings]: ./output_images//pre_processings.png "Show preprozessings"
+[pre_processings]: ./output_images/pre_processings.png "Show preprozessings"
+[processing]: ./output_images/processings.png "Show preprozessings"
 [wraped]: ./output_images/warped.png "Wraped image"
-[processings]: ./output_images/processings.png "Processings"
+[processed_img]: ./output_images/processed_img.png "Processings"
 [slidewindow]: ./output_images/slidewindow.png "Fit Visual"
 [draw_lines]: ./output_images/draw_lines.png "Lines drawn"
 [display_curve_values]: ./output_images/display_curve_values.png "display_curve_values"
@@ -82,7 +83,7 @@ The Pipeline is defined as
 
 The result is the second Image in the first line (Result)
 
-![alt text][preprozessings]
+![alt text][pre_processings]
 
 
 ### 4. Perspective transform
@@ -128,7 +129,7 @@ Ihe final Image prozessing pipline is like following:
 This is the result on all testimages. The last picture shows the histogramm of the final result . 
 You can find the code in the notebook Chapter "5. Image Pipeline"
 
-![alt text][processings]
+![alt text][processing]
  
 
 ### 6. Identifying lane-line pixels and positions fiting with a polynomial.
@@ -179,9 +180,16 @@ Here's the [direkt download](./project_video_output.mp4)
 
 ---
 
-###Discussion
+### Discussion
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+The result of my solution works prity well on all test images and the most parts of the video.
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+Looking at the video it seams the process has no problems with dark struktures like shadows. It had some problems with light more horizontal lines on the right side. Likes at timemark 00:24 or 00:40.
+ 
+ An approach to make this prozess better could be to get pictures were the current solutions has problems and analyse them on following way.
+ 
+ * **Adaped perspective transformation** : It will be helpfull to chosse longer lines at the src and dest points, so the historgam easier to interprete via the "Sliding Window Polyfit". The transformation might be used as mask in a better way to.
+ 
+ * **Adaped Image preprozessing**: Looking to layers of different image encodings like HSV, or look other threadhold algorithms like Sobel Magnitude Threshold or Sobel Direction Threshold. 
+ 
 
