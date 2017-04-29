@@ -34,27 +34,27 @@ Following files and folders are included:
 * **Advanced Lane Finding.ipynb:**  Notebook contains all code to produce the result video and the pictures of this README
 * **camera_cal:** This folder contains the pictures of the camera calibration
 * **output_images:** This folder contains all pictures used in this README
-* **test_images:** This folder contains all pictures to test image preprozessing and calculations.
-* **project_video.mp4** The original video to prozess and find the lines.
-* **project_video_output.mp4** The prozessed video with lines and displaying lines and curve calculations.
+* **test_images:** This folder contains all pictures to test image preprocessing and calculations.
+* **project_video.mp4** The original video to process and find the lines.
+* **project_video_output.mp4** The processed video with lines and displaying lines and curve calculations.
 
 ---
 ### 1. Camera Calibration
 
-Every camera produces pictures with its individual [distortion](https://en.wikipedia.org/wiki/Distortion_(optics)). So it is necessary to calibrate the "camara" with chaessboard images. 
+Every camera produces pictures with its individual [distortion](https://en.wikipedia.org/wiki/Distortion_(optics)). So it is necessary to calibrate the "camara" with chessboard images. 
 
-The code for this step is contained in the first code cell of the IPython notebook located in the notbook in the Chapter "1. Camera Calibration"
+The code for this step is contained in the first code cell of the IPython notebook located in the notebook in the Chapter "1. Camera Calibration"
 
 I start by preparing "object points", which will be the (x, y, z) coordinates of the chessboard corners in the world. Here I am assuming the chessboard is fixed on the (x, y) plane at z=0, such that the object points are the same for each calibration image.  Thus, `corners` is just a replicated array of coordinates, and `obj_points` will be appended with a copy of it every time I successfully detect all chessboard corners in a test image.  `img_points` will be appended with the (x, y) pixel position of each of the corners in the image plane with each successful chessboard detection.  
 
-Not on all images the chessboard corners were detected. Some images need smaller patterns to be detected.  So first I tried to detect the corners with a (9, 6) pattern. If the pattern not has been found I tryed a (9, 5) pattern. 
+Not on all images the chessboard corners were detected. Some images need smaller patterns to be detected.  So first I tried to detect the corners with a (9, 6) pattern. If the pattern  has not been found I tryed a (9, 5) pattern. 
 
 ![alt text][chessboard_marked]
 
 ---
 ### 2. Undistorting
 
-I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result. See notbook in the Chapter "2. Camera Calibration"
+I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result. See notebook in the Chapter "2. Camera Calibration"
 
 ![alt text][undistorted]
 
@@ -63,19 +63,19 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 ![alt text][org_undistorted]
 
 ### 3. Preprozessing pipeline
-I used a combination of color and gradient thresholds to generate a binary image. You find the code located in the notbook in the Chapter "3. Create a thresholded binary image"
+I used a combination of color and gradient thresholds to generate a binary image. You find the code located in the notebook in the Chapter "3. Create a thresholded binary image"
 
-The two in first line show the
+The two in the first line show the
 * original image (Original)
 * the final binary image (Result)
 
-The three pictures in the bottem line are the result of the of the three thresholds combined to the result
+The three pictures in the bottom line are the result of the three thresholds combined into the final result
 
-* First picture:  Absolut sobel thresholding in x orientation on the L - Layer of an HLS encoded picture. (ksize = 3, hresh=(25, 100)) **ABS_SOBEL(L, x)**
+* First picture:  Absolute sobel thresholding in x orientation on the L - Layer of an HLS encoded picture. (ksize = 3, hresh=(25, 100)) **ABS_SOBEL(L, x)**
 
-* Second picture: Absolut sobel thresholding in x orientation on the S - Layer of an HLS encoded picture. (ksize = 3, hresh=(10, 100)) **ABS_SOBEL(S, x)**
+* Second picture: Absolute sobel thresholding in x orientation on the S - Layer of an HLS encoded picture. (ksize = 3, hresh=(10, 100)) **ABS_SOBEL(S, x)**
 
-* Mask to find the the light spots on the picture **LIGHT_MASK()**
+* Mask to find the light spots on the picture **LIGHT_MASK()**
 
 The Pipeline is defined as  
 
@@ -86,9 +86,9 @@ The result is the second Image in the first line (Result)
 ![alt text][pre_processings]
 
 
-### 4. Perspective transform
+### 4. Perspective transformation
 
-The code for my perspective transform includes a function called `warp()`, which appears in the notbook in the Chapter "4. Perspective transform". I chose these hardcode the source and destination points in the following manner:
+The code for my perspective transformation includes a function called `warp()`, which appears in the notebook in the Chapter "4. Perspective transform". I chose this hardcoding of the source and destination points in the following manner:
 
 ```
 src = np.float32 ([
@@ -114,27 +114,27 @@ This resulted in the following source and destination points:
 | 885, 577     | 921, 550      |
 | 1000, 651      | 921, 651        |
 
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
+I verified that my perspective transformation was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
 ![alt text][wraped]
 
 ### 5.  Image pipline 
 
-Ihe final Image prozessing pipline is like following:
+The final Image processing pipeline is like the following:
 
-* undisorting the image 
+* undistorting the image 
 * wrap image
-* preprozess image
+* preprocessing image
 
-This is the result on all testimages. The last picture shows the histogramm of the final result . 
+This is the result on all test images. The picture in the last column shows the histogramm of the final result . 
 You can find the code in the notebook Chapter "5. Image Pipeline"
 
 ![alt text][processing]
  
 
-### 6. Identifying lane-line pixels and positions fiting with a polynomial.
+### 6. Identifying lane-line pixels and positions fitting with a polynomial.
 
-In `slidewindow` (notebook Chapter 6 "Sliding Window Polyfit"), I extract lines and fit polynomials to binary image. In order to do that, I find the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines image and use 17 sliding windows to detect the line position. The addition of sliding window speeds up the search for lane and focuses on only the parts of the image that lane pixels are detected. Numpy method `polyfit()` applies a second-order polynomial to the lane pxiels.
+In `slidewindow` (notebook Chapter 6 "Sliding Window Polyfit"), I extract lines and fit polynomials to binary image. In order to do that, I find the peak of the left and right halves of the histogram. These will be the starting point for the left and right lines image and use 17 sliding windows to detect the line position. The addition of sliding windows speeds up the search for lane and focuses on only the parts of the image that lane pixels are detected. Numpy method `polyfit()` applies a second-order polynomial to the lane pixels.
 
 
 The output from `slidewindow` is used as an input for `drawLines` to show the lane polynomial as a red and blue line.
@@ -143,13 +143,13 @@ It is also used as an input for `polyfit_on_fit` to narrow down the location of 
 ![alt text][slidewindow] ![alt text][draw_lines] 
 
 
-### 5.  Calculation of the radius of the curvature of the lane and the position of the vehicle with respect to center.
+### 5.  Calculation of the radius of the curvature of the lane and the position of the vehicle with respect to the center.
 
-The code for my radius of curvature and vehicle position is done in a function called `calculate_curvature_distance()`, which appears in the notebook Chapter "8. Radius of Curvature and Distance from Lane Center Calculation"
+The code for my radius of curvature and vehicle position is done in a function called `calculate_curvature_distance()`, which appears in the notebook Chapter "8. Radius of Curvature and Distance from Lane Center Calculation".
 
 #### a. radius of the curvature
 
-I referred to [this](http://en.wikipedia.org/wiki/Curve_fitting) and [this](http://en.wikipedia.org/wiki/Polynomial_interpolation) to come up with the formula for curvature compution and I use the folowing code to perform the radius calculation: 
+I referred to [this](http://en.wikipedia.org/wiki/Curve_fitting) and [this](http://en.wikipedia.org/wiki/Polynomial_interpolation) to come up with the formula for curvature compution and I use the following code to perform the radius calculation: 
 ```
 left_fit_cr = np.polyfit(left_y*y_meters_per_pixel, left_x*x_meters_per_pixel, 2)
 
@@ -161,12 +161,12 @@ I used the midpoint of dashcam image width as the vehicle position and then used
 
 ### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines in my code in the notebook Capter "9. Prozess whole pipline" in the function `process()`.  Here is an example of my result on a test image:
+I implemented this step in lines in my code in the notebook Chapter "9. Process whole pipeline" in the function `process()`.  Here is an example of my result on a test image:
 
 ![alt text][display_curve_values]
 
 ### 7. Pipeline (testimages)
-Running the pipline on all testimages it shows following result.
+Running the pipeline on all testimages the following result is shown:
 
 ![alt text][processed_img]
 
@@ -176,20 +176,20 @@ Running the pipline on all testimages it shows following result.
 
 [![E](https://img.youtube.com/vi/CG84tNsAm7Q/0.jpg)](https://youtu.be/CG84tNsAm7Q "Training Track - Track 1")
 
-Here's the [direkt download](./project_video_output.mp4)
+Here's the [direct download](./project_video_output.mp4)
 
 ---
 
 ### Discussion
 
-The result of my solution works prity well on all test images and the most parts of the video.
+The result of my solution works pretty well on all test images and the most parts of the video.
 
-Looking at the video it seams the process has no problems with dark struktures like shadows. It had some problems with light more horizontal lines on the right side. Likes at timemark 00:24 or 00:40.
+Looking at the video it seams the process has no problems with dark structures like shadows. It had some problems with light, more horizontal lines on the right side. Likes at timemark 00:24 or 00:40.
  
- An approach to make this prozess better could be to get pictures were the current solutions has problems and analyse them on following way.
+ An approach to make this process better could be to get pictures where the current solutions have problems and analyse them in the  following way.
  
- * **Adaped perspective transformation** : It will be helpfull to chosse longer lines at the src and dest points, so the historgam easier to interprete via the "Sliding Window Polyfit". The transformation might be used as mask in a better way to.
+ * **Adapted perspective transformation** : It will be helpful to choose longer lines at the src and test points, so the histogram is easier to be interpreted via the "Sliding Window Polyfit". The transformation might be used as mask in a better way too.
  
- * **Adaped Image preprozessing**: Looking to layers of different image encodings like HSV, or look other threadhold algorithms like Sobel Magnitude Threshold or Sobel Direction Threshold. 
+ * **Adapted Image preprocessing**: Watch out for layers of different image encodings like HSV, or look for other threadhold algorithms like Sobel Magnitude Threshold or Sobel Direction Threshold. 
  
 
