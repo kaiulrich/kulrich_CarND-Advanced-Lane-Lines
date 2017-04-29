@@ -172,8 +172,10 @@ Running the pipline on all testimages it shows following result.
 ---
 
 ### 8. Pipeline (video)
-Here's a [link to my video result](./project_video_output.mp4)
 
+[![E](https://img.youtube.com/vi/CG84tNsAm7Q/0.jpg)](https://youtu.be/CG84tNsAm7Q "Training Track - Track 1")
+
+Here's the [direkt download](./project_video_output.mp4)
 
 ---
 
